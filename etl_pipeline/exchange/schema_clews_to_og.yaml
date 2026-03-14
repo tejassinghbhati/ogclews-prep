@@ -1,0 +1,85 @@
+# exchange/schema_clews_to_og.yaml
+# Defines how CLEWS output variables map to OG-Core input parameters.
+# Each mapping is one row in the ETL pipeline.
+
+version: "1.0"
+source_model: "CLEWS/OSeMOSYS"
+target_model: "OG-Core"
+
+mappings:
+
+  - id: "energy_investment_to_delta_tau"
+    description: >
+      Total new energy capacity investment (GW) is used to adjust the
+      capital depreciation allowance (delta_tau_annual) in OG-Core.
+      Higher energy investment implies faster capital turnover.
+    source:
+      file: "TotalCapacityAnnual.csv"
+      filters:
+        TECHNOLOGY: ["COALPP", "SOLARPP", "WINDPP", "HYDROPP"]
+      aggregate:
+        method: "sum"
+        group_by: "YEAR"
+      column: "VALUE"
+    unit_conversion:
+      factor: 0.001          # GW → TW (normalize to model units)
+      notes: "Divide by 1000 to convert GW to model-scale units"
+    transform:
+      method: "scale_to_range"
+      min: 0.04
+      max: 0.06
+      notes: "Map normalized investment to plausible delta_tau range [0.04, 0.06]"
+    target:
+      parameter: "delta_tau_annual"
+      type: "scalar"
+      og_core_description: "Annual depreciation rate of capital"
+
+  - id: "co2_emissions_to_tau_c"
+    description: >
+      Total CO2 emissions (Mt CO2) are mapped to a carbon consumption
+      tax (tau_c) in OG-Core, approximating the shadow cost of emissions.
+    source:
+      file: "AnnualTechnologyEmission.csv"
+      filters:
+        EMISSION: ["CO2"]
+      aggregate:
+        method: "sum"
+        group_by: "YEAR"
+      column: "VALUE"
+    unit_conversion:
+      factor: 1.0
+      notes: "Already in Mt CO2, no conversion needed"
+    transform:
+      method: "linear_scale"
+      slope: 0.0005
+      intercept: 0.0
+      notes: "Each Mt CO2 contributes 0.0005 to tau_c (carbon tax proxy)"
+    target:
+      parameter: "tau_c"
+      type: "scalar"
+      og_core_description: "Consumption tax rate (used as carbon tax proxy)"
+
+  - id: "system_cost_to_alpha_G"
+    description: >
+      Total discounted energy system cost (MUSD) as a share of a GDP
+      baseline estimate is mapped to government spending share (alpha_G).
+    source:
+      file: "TotalDiscountedCost.csv"
+      filters: {}
+      aggregate:
+        method: "sum"
+        group_by: "YEAR"
+      column: "VALUE"
+    unit_conversion:
+      factor: 0.000001       # MUSD → trillion USD (rough model-scale normalization)
+      notes: "Scale down to match OG-Core's normalized GDP units"
+    transform:
+      method: "scale_to_range"
+      min: 0.03
+      max: 0.08
+      notes: "Map to plausible alpha_G range [0.03, 0.08]"
+    target:
+      parameter: "alpha_G"
+      type: "list"
+      length: 1
+      og_core_description: "Government spending as share of GDP"
