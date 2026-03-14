@@ -1,0 +1,10 @@
+# gsoc-ogclews-prep/.gitignore
+outputs/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.pkl
+*.log
+.venv/
+*.egg-info/
+.env

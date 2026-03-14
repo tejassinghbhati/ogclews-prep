@@ -1,0 +1,13 @@
+run:
+  scenario_name: "baseline_phl"
+  country_module: ""
+  time_path: false
+  start_year: 2025
+
+og_spec:
+  maxiter: 100          # max SS outer loop iterations (correct name)
+  mindist_SS: 1.0e-3    # SS convergence tolerance (looser = converges faster)
+  nu: 0.4               # dampening parameter for SS iteration (helps convergence)
+
+output:
+  base_dir: "outputs"
