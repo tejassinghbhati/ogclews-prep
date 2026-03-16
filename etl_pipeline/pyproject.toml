@@ -1,0 +1,9 @@
+# etl_pipeline/pyproject.toml
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.pyright]
+include = ["."]
+venvPath = "C:/Users/HP/anaconda3/envs"
+venv = "ogclews"
+extraPaths = ["."]

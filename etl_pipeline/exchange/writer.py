@@ -4,7 +4,7 @@ from pathlib import Path
 from datetime import datetime
 
 
-def write_exchange_file(params: dict, output_path: Path, metadata: dict = None):
+def write_exchange_file(params: dict, output_path: Path, metadata: dict | None = None):
     """
     Write validated OG-Core parameters to a JSON exchange file.
     This file is the handoff artifact between CLEWS and OG-Core.
