@@ -10,10 +10,10 @@ Contributor role: Contributor 1 — Scientific Programming & Model Integration
 
 | # | Project | Status | Description |
 |---|---|---|---|
-| 01 | [OG-Core Runner](./og_runner/) | ✅ Complete | Standalone runner with structured output, log capture, and summary extraction |
-| 02 | [ETL Pipeline](./etl_pipeline/) | 🔄 In progress | CLEWS → OG-Core data exchange pipeline |
-| 03 | [Validation Framework](./validation_framework/) | 📋 Planned | Schema validation for pipeline inputs/outputs |
-| 04 | [Convergence Prototype](./convergence_prototype/) | 📋 Planned | Iterative coupled model convergence logic |
+| 01 | [OG-Core Runner](./og_runner/) | Complete | Standalone runner with structured output, log capture, and summary extraction |
+| 02 | [ETL Pipeline](./etl_pipeline/) | In progress | CLEWS → OG-Core data exchange pipeline |
+| 03 | [Validation Framework](./validation_framework/) | Planned | Schema validation for pipeline inputs/outputs |
+| 04 | [Convergence Prototype](./convergence_prototype/) | Planned | Iterative coupled model convergence logic |
 
 ## Context
 
