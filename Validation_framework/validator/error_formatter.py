@@ -10,6 +10,7 @@ Formats a :class:`ValidationResult` for three different consumers:
 from __future__ import annotations
 
 import json
+import sys
 
 from colorama import Fore, Style, init as colorama_init
 
@@ -19,6 +20,26 @@ from .models import ValidationResult
 # Ensure Windows terminals also get ANSI colour codes
 colorama_init(autoreset=True)
 
+# Detect whether the terminal can handle UTF-8 symbols. Fall back to plain
+# ASCII labels so the formatter never raises UnicodeEncodeError on cp1252
+# / latin-1 terminals common on Windows.
+def _supports_unicode() -> bool:
+    try:
+        enc = (sys.stdout.encoding or "ascii").lower().replace("-", "")
+        return enc in ("utf8", "utf16", "utf32")
+    except Exception:  # noqa: BLE001
+        return False
+
+
+if _supports_unicode():
+    _SYM_OK   = "✔"
+    _SYM_FAIL = "✗"
+    _SYM_WARN = "⚠"
+else:
+    _SYM_OK   = "[OK]"
+    _SYM_FAIL = "[ERROR]"
+    _SYM_WARN = "[WARN]"
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # format_for_terminal
@@ -27,33 +48,29 @@ colorama_init(autoreset=True)
 def format_for_terminal(result: ValidationResult) -> str:
     """Return a coloured string suitable for printing to a terminal.
 
-    * Green checkmark on pass.
-    * Red ``✗`` per error with field name and message.
-    * Yellow warnings (if any).
+    * Green pass marker on success.
+    * Red error marker per error with field name and message.
+    * Yellow warning marker for warnings.
     """
     lines: list[str] = []
 
     if result.passed:
-        lines.append(f"{Fore.GREEN}✔ Validation PASSED — all checks OK.{Style.RESET_ALL}")
+        lines.append(f"{Fore.GREEN}{_SYM_OK} Validation PASSED — all checks OK.{Style.RESET_ALL}")
     else:
         lines.append(
-            f"{Fore.RED}✗ Validation FAILED — {len(result.errors)} error(s) found.{Style.RESET_ALL}"
+            f"{Fore.RED}{_SYM_FAIL} Validation FAILED — {len(result.errors)} error(s) found.{Style.RESET_ALL}"
         )
         for err in result.errors:
             lines.append(
-                f"  {Fore.RED}✗{Style.RESET_ALL} [{err.stage}] "
+                f"  {Fore.RED}{_SYM_FAIL}{Style.RESET_ALL} [{err.stage}] "
                 f"{Fore.YELLOW}{err.field}{Style.RESET_ALL}: "
                 f"{err.message}"
             )
-            lines.append(
-                f"      expected : {err.expected}"
-            )
-            lines.append(
-                f"      received : {err.received}"
-            )
+            lines.append(f"      expected : {err.expected}")
+            lines.append(f"      received : {err.received}")
 
     for warning in result.warnings:
-        lines.append(f"  {Fore.YELLOW}⚠ WARNING:{Style.RESET_ALL} {warning}")
+        lines.append(f"  {Fore.YELLOW}{_SYM_WARN} WARNING:{Style.RESET_ALL} {warning}")
 
     return "\n".join(lines)
 
