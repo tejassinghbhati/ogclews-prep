@@ -1,0 +1,60 @@
+# CLEWS Input Schema
+# ==================
+# Human-readable documentation of every CLEWS input field accepted by CLEWSInputConfig.
+# This file is documentation only — it is not executed.
+
+schema_version: "1.0.0"
+model: CLEWSInputConfig
+
+fields:
+
+  data_dir:
+    type: path
+    required: true
+    description: >
+      Absolute or relative path to the directory containing all CLEWS
+      data files (CSV outputs from OSeMOSYS / CLEWS runs).
+      The directory must exist at validation time.
+    example: "./data/clews_outputs"
+
+  required_files:
+    type: list[string]
+    required: false
+    default: []
+    description: >
+      List of filenames (relative to data_dir) that must exist.
+      Used by file_validator.check_files_exist() to enforce mandatory inputs.
+    example:
+      - "TotalCapacityAnnual.csv"
+      - "ProductionByTechnologyAnnual.csv"
+      - "AnnualTechnologyEmission.csv"
+      - "TotalDiscountedCost.csv"
+
+  region:
+    type: string
+    required: true
+    description: >
+      Short geographic region identifier matching the OSeMOSYS region tag
+      used in the CLEWS model. Used for output labelling and cross-model
+      linkage.
+    example: "SSA"
+
+  start_year:
+    type: integer
+    required: true
+    range:
+      min: 2020
+      max: 2100
+    description: >
+      First calendar year of the CLEWS simulation.
+      Must be between 2020 and 2100 inclusive.
+    example: 2025
+
+  end_year:
+    type: integer
+    required: true
+    constraint: end_year >= start_year
+    description: >
+      Last calendar year of the CLEWS simulation.
+      Must be greater than or equal to start_year.
+    example: 2050

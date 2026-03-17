@@ -1,6 +1,6 @@
 # OG-Core Runner
 
-A standalone Python runner for the [OG-Core](https://github.com/PSLmodels/OG-Core) overlapping-generations macroeconomic model. Built as part of the **OG–CLEWS** integration project — a Google Summer of Code 2025 initiative under the United Nations Department of Economic and Social Affairs (UN DESA) to link OG-Core with the CLEWS (Climate, Land, Energy, Water Systems) framework into a unified policy modelling tool.
+A standalone Python runner for the [OG-Core](https://github.com/PSLmodels/OG-Core) overlapping-generations macroeconomic model. Built as part of the **OG–CLEWS** integration project — a Google Summer of Code 2026 initiative under the United Nations Department of Economic and Social Affairs (UN DESA) to link OG-Core with the CLEWS (Climate, Land, Energy, Water Systems) framework into a unified policy modelling tool.
 
 This runner is the first component of the broader [MUIOGO](https://github.com/EAPD-DRB/MUIOGO) platform.
 
@@ -85,7 +85,7 @@ run:
   scenario_name: "baseline_phl"
   country_module: ""        # leave empty for OG-Core defaults, or e.g. "ogphl"
   time_path: false          # false = steady-state only (faster)
-  start_year: 2025
+  start_year: 2026
 
 og_spec:                    # passed directly to p.update_specifications()
   maxiter: 100

@@ -1,0 +1,10 @@
+{
+  "scenario_name": "broken_config",
+  "country_module": "og_usa.calibrate",
+  "time_path": false,
+  "og_spec": {
+    "maxiter": 5000,
+    "nu": 1.5,
+    "mindist_SS": 1e-9
+  }
+}

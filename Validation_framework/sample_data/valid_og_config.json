@@ -1,0 +1,11 @@
+{
+  "scenario_name": "baseline_2035",
+  "country_module": "og_usa.calibrate",
+  "time_path": true,
+  "start_year": 2025,
+  "og_spec": {
+    "maxiter": 400,
+    "mindist_SS": 1e-9,
+    "nu": 0.4
+  }
+}

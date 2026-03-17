@@ -1,13 +1,13 @@
 run:
   scenario_name: "baseline_phl"
-  country_module: ""
-  time_path: false
-  start_year: 2025
+  country_module: ""        # leave empty for OG-Core defaults, or e.g. "ogphl"
+  time_path: false          # false = steady-state only (faster)
+  start_year: 2026
 
-og_spec:
-  maxiter: 100          # max SS outer loop iterations (correct name)
-  mindist_SS: 1.0e-3    # SS convergence tolerance (looser = converges faster)
-  nu: 0.4               # dampening parameter for SS iteration (helps convergence)
+og_spec:                    # passed directly to p.update_specifications()
+  maxiter: 100
+  mindist_SS: 1.0e-3
+  nu: 0.4
 
 output:
   base_dir: "outputs"

@@ -1,0 +1,87 @@
+# OG-Core Input Schema
+# ====================
+# Human-readable documentation of every OG-Core input field accepted by OGInputConfig.
+# This file is documentation only — it is not executed.
+
+schema_version: "1.0.0"
+model: OGInputConfig
+
+fields:
+
+  scenario_name:
+    type: string
+    required: true
+    description: >
+      A unique, human-readable label for this model run.
+      Used in output directories and log filenames.
+    example: "baseline_2035"
+
+  country_module:
+    type: string
+    required: true
+    description: >
+      Python import path of the country-specific calibration module.
+      The module must expose a `get_micro_data` function and a set of
+      pre-calibrated parameters compatible with OG-Core expectations.
+    example: "og_usa.calibrate"
+
+  time_path:
+    type: boolean
+    required: true
+    description: >
+      Whether to compute the full non-linear transition path (TPI).
+      Set to false to compute only the steady state (faster for diagnostics).
+    example: true
+
+  start_year:
+    type: integer
+    required: true
+    range:
+      min: 2020
+      max: 2100
+    description: >
+      First calendar year of the simulation.
+      Must be between 2020 and 2100 inclusive.
+    example: 2025
+
+  og_spec:
+    type: object
+    required: false
+    description: >
+      Optional dict of OG-Core parameter overrides.
+      Only known keys are validated; additional keys are passed through.
+    nested_fields:
+
+      maxiter:
+        type: integer
+        required: false
+        range:
+          min: 1
+          max: 1000
+        description: >
+          Maximum number of iterations for the steady-state / TPI solver.
+          Higher values allow more iterations but increase runtime.
+        example: 400
+
+      mindist_SS:
+        type: float
+        required: false
+        range:
+          min: 1.0e-12
+          max: 1.0
+        description: >
+          Convergence criterion for the steady-state solver.
+          The model stops when the maximum distance between successive
+          guesses falls below this threshold.
+        example: 1.0e-9
+
+      nu:
+        type: float
+        required: false
+        range:
+          min: 0.0
+          max: 1.0
+        description: >
+          Coefficient of updating (step size) in the TPI algorithm.
+          Values close to 0 give conservative updates; 1.0 is a full step.
+        example: 0.4
