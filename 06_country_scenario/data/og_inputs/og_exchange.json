@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-03-20T16:00:12.698009",
+  "source_model": "CLEWS/OSeMOSYS",
+  "target_model": "OG-Core",
+  "country": "Mauritius (MUS)",
+  "scenario": "Renewable Energy Transition 2020-2035",
+  "metadata": {
+    "data_dir": "data/clews_outputs",
+    "years": "2020-2035",
+    "technologies": [
+      "SOLAR_PV",
+      "WIND_ONSHORE",
+      "BAGASSE_CHP",
+      "DIESEL_OPEN_CYCLE",
+      "HYDRO_RUN"
+    ]
+  },
+  "og_parameters": {
+    "delta_tau_annual": 0.045922,
+    "tau_c": 0.000625,
+    "alpha_G": [
+      0.042193
+    ]
+  },
+  "transformation_trace": {
+    "delta_tau_annual": {
+      "source": "TotalCapacityAnnual.csv",
+      "method": "sum energy techs \u2192 TW \u2192 normalize to [0.04, 0.06]",
+      "input_value": 0.001833,
+      "output": 0.045922
+    },
+    "tau_c": {
+      "source": "AnnualTechnologyEmission.csv",
+      "method": "sum CO2 \u2192 linear_scale \u00d7 0.0005",
+      "input_value": 1.250062,
+      "output": 0.000625
+    },
+    "alpha_G": {
+      "source": "TotalDiscountedCost.csv",
+      "method": "sum costs / GDP_proxy \u2192 normalize to [0.03, 0.08]",
+      "input_value": 0.024385,
+      "output": [
+        0.042193
+      ]
+    }
+  }
+}
