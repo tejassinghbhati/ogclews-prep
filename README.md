@@ -77,7 +77,7 @@ outputs/{run_id}/
 ### File structure
 
 ```
-og_runner/
+01_og_runner/
 ├── runner/
 │   ├── __init__.py
 │   ├── config_loader.py     ← reads YAML, returns RunConfig dataclass
@@ -213,7 +213,7 @@ Runs at two stages with pydantic:
 ### File structure
 
 ```
-etl_pipeline/
+02_etl_pipeline/
 ├── data/
 │   └── sample_clews_outputs/
 │       ├── TotalCapacityAnnual.csv
@@ -278,7 +278,7 @@ All errors are returned as structured objects, not string messages:
 ### File structure
 
 ```
-validation_framework/
+03_validation_framework/
 ├── validation/
 │   ├── __init__.py
 │   ├── input_validator.py     ← file existence and column checks
@@ -346,7 +346,7 @@ The orchestrator, metrics, and output structure remain unchanged.
 ### File structure
 
 ```
-convergence_prototype/
+04_convergence_prototype/
 ├── convergence/
 │   ├── __init__.py
 │   ├── mock_clews.py          ← mock CLEWS runner (clearly labeled)
@@ -463,7 +463,7 @@ app.register_blueprint(ogcore_api)
 ### File structure
 
 ```
-ogcore_api/
+05_ogcore_api/
 ├── API/
 │   ├── app_patch.py                    ← two lines to add to app.py
 │   ├── Routes/
@@ -532,7 +532,7 @@ Technologies modelled:
 ### File structure
 
 ```
-country_scenario/
+06_country_scenario/
 ├── data/
 │   ├── clews_outputs/
 │   │   ├── TotalCapacityAnnual.csv
