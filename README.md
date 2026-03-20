@@ -41,20 +41,20 @@ ogclews-prep/
 
 ## Projects
 
-| # | Project | Status | Hours | Description |
-|---|---|---|---|---|
-| 01 | [OG-Core Runner](#01-og-core-runner) | ✅ Complete | ~15h | Standalone programmatic runner with structured output, log capture, and metadata |
-| 02 | [ETL Pipeline](#02-etl-pipeline) | ✅ Complete | ~20h | CLEWS → OG-Core schema-driven data exchange pipeline with pydantic validation |
-| 03 | [Validation Framework](#03-validation-framework) | ✅ Complete | ~12h | Pre/post-run schema validation with structured UI-ready error messages |
-| 04 | [Convergence Prototype](#04-convergence-prototype) | ✅ Complete | ~18h | Iterative coupled model loop with L2 norm convergence and full logging |
-| 05 | [Flask API Endpoints](#05-flask-api-endpoints) | ✅ Complete | ~14h | OG-Core run/status/results endpoints mirroring MUIOGO's existing API pattern |
-| 06 | [Country Scenario](#06-country-scenario) | ✅ Complete | ~16h | End-to-end Mauritius renewable transition scenario with 3 executed notebooks |
+| # | Project | Status | Description |
+|---|---|---|---|
+| 01 | [OG-Core Runner](#01-og-core-runner) | ✅ Complete | Standalone programmatic runner with structured output, log capture, and metadata |
+| 02 | [ETL Pipeline](#02-etl-pipeline) | ✅ Complete | CLEWS → OG-Core schema-driven data exchange pipeline with pydantic validation |
+| 03 | [Validation Framework](#03-validation-framework) | ✅ Complete | Pre/post-run schema validation with structured UI-ready error messages |
+| 04 | [Convergence Prototype](#04-convergence-prototype) | ✅ Complete | Iterative coupled model loop with L2 norm convergence and full logging |
+| 05 | [Flask API Endpoints](#05-flask-api-endpoints) | ✅ Complete | OG-Core run/status/results endpoints mirroring MUIOGO's existing API pattern |
+| 06 | [Country Scenario](#06-country-scenario) | ✅ Complete | End-to-end Mauritius renewable transition scenario with 3 executed notebooks |
 
 ---
 
 ## 01 — OG-Core Runner
 
-**Path:** `og_runner/`
+**Path:** `01_og_runner/`
 **Why it matters:** The mentors need to see that I understand how OG-Core executes internally — not just that I have read the documentation. This runner proves I can wire OG-Core into MUIOGO's backend programmatically.
 
 ### What it does
