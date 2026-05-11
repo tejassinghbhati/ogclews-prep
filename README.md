@@ -43,6 +43,45 @@ ogclews-prep/
 
 ---
 
+### Diagram 1 — High-Level System Architecture
+
+The following diagram illustrates the macro-level interaction between all eight repository modules, the two external models, and the web-based control room interface.
+
+```mermaid
+flowchart TB
+    subgraph MODELS ["Core Scientific Models"]
+        CLEWS["CLEWS / OSeMOSYS\nPhysical Resource Model\n(Energy · Land · Water · Climate)"]
+        OGCORE["OG-Core\nOverlapping-Generations\nMacroeconomic DSGE Model"]
+    end
+
+    subgraph INFRA ["Module Infrastructure (Modules 01–06)"]
+        M01["01 OG Runner\nProgrammatic execution\nwrapper + YAML config"]
+        M02["02 ETL Pipeline\nSchema-driven data\ntranslation layer"]
+        M03["03 Validation\npydantic + jsonschema\nintegrity checks"]
+        M04["04 Convergence\nIterative L2-norm\ncoupling orchestrator"]
+        M05["05 Flask API\nMUIUOGO-compatible\nasync REST endpoints"]
+        M06["06 Mauritius\nEnd-to-end\ncountry scenario"]
+    end
+
+    subgraph PLATFORM ["Web Platform (Modules 07–08)"]
+        M08["08 FastAPI Backend\nWebSocket telemetry\nasyncio subprocess"]
+        M07["07 React Dashboard\nReal-time control room\nvisualization interface"]
+    end
+
+    CLEWS -->|"Physical outputs\n(capacity, emissions, costs)"| M02
+    M02 -->|"Validated OG parameters\n(og_exchange.json)"| M03
+    M03 -->|"Validated parameter vector"| M04
+    M04 -->|"Updated macro params"| M01
+    M01 -->|"OG-Core run results"| OGCORE
+    OGCORE -->|"Macro aggregates\n(GDP, wages, TFP)"| M04
+    M04 -->|"Convergence satisfied?"| M06
+    M05 -->|"REST API integration"| M07
+    M04 -->|"stdout stream"| M08
+    M08 -->|"WebSocket\n/ws/convergence"| M07
+```
+
+---
+
 ## 3. Project Modules
 
 | Module ID | Module Designation | Status | Technical Description |
@@ -82,6 +121,46 @@ The execution runner isolates the OG-Core model, enabling programmable execution
 │   └── sample_config.yaml   [Artifact] Representative scenario configuration
 ├── outputs/                 [Directory] Generated automatically upon execution
 └── run_og.py                [Execution] Command-line interface entry point
+```
+
+---
+
+### Diagram 2 — ETL Data Flow: CLEWS → OG-Core
+
+This pipeline diagram traces the precise data lineage from raw OSeMOSYS solver output files to the validated OG-Core parameter vector consumed by the macroeconomic model.
+
+```mermaid
+flowchart LR
+    subgraph CLEWS_OUT ["CLEWS / OSeMOSYS Output Files"]
+        F1["TotalCapacityAnnual.csv\nInstalled capacity by technology\nUnit: GW"]
+        F2["AnnualTechnologyEmission.csv\nAggregate CO₂ emissions\nUnit: Mt CO₂"]
+        F3["TotalDiscountedCost.csv\nSystem-wide discounted cost\nUnit: MUSD"]
+    end
+
+    subgraph SCHEMA ["schema_clews_to_og.yaml"]
+        S1["Mapping: capacity → delta_tau\nGW→TW conversion\nmin-max norm [0.04, 0.06]"]
+        S2["Mapping: emissions → tau_c\nlinear scalar ×0.0005"]
+        S3["Mapping: cost → alpha_G\nGDP ratio proxy\nmin-max norm [0.03, 0.08]"]
+    end
+
+    subgraph VALIDATE ["Module 03 — Validation"]
+        V1["Pre-transform:\npydantic OGExchangeSchema\nBoundary checks"]
+        V2["Post-transform:\njsonschema envelope\nNon-negativity asserts"]
+    end
+
+    subgraph OG_IN ["OG-Core Input Parameters"]
+        P1["delta_tau_annual\nTFP growth proxy\nRange: [0.04, 0.06]"]
+        P2["tau_c\nEmission penalty\nRange: ≥ 0.0"]
+        P3["alpha_G\nGovt. spending share\nRange: [0.0, 1.0]"]
+    end
+
+    F1 --> S1 --> V1 --> P1
+    F2 --> S2 --> V1 --> P2
+    F3 --> S3 --> V1 --> P3
+    P1 --> V2
+    P2 --> V2
+    P3 --> V2
+    V2 -->|"og_exchange.json"| OG_IN
 ```
 
 ---
@@ -132,6 +211,39 @@ To guarantee systemic stability during unattended convergence iterations, a dedi
 | `delta_tau_annual` | [0.0, 1.0] | Parameter deviation: Value exceeds specified [0.0, 1.0] bounds. |
 | `tau_c` | >= 0.0 | Parameter deviation: Value reflects physically impossible negative emissions proxy. |
 | `alpha_G` | [0.0, 1.0] | Parameter deviation: Value exceeds theoretical percentage limits. |
+
+---
+
+### Diagram 3 — Convergence Loop Algorithm
+
+The following flowchart details the complete iterative coupling algorithm that drives the OG-CLEWS soft-linking engine, including the L2-norm termination condition.
+
+```mermaid
+flowchart TD
+    A(["START\nInitialize parameter vector P₀"])
+    B["Run CLEWS / OSeMOSYS\nGenerate physical output files\n(capacity, emissions, cost)"]
+    C["Execute ETL Pipeline\nTranslate CLEWS outputs →\nOG-Core parameters P_t"]
+    D["Run Module 03 Validation\nEnforce domain constraints\non transformed parameters"]
+    E{"Validation\nPassed?"}
+    FERR(["ABORT\nEmit structured JSON error\nLog diagnostic to telemetry"])
+    F["Run OG-Core\nCompute macroeconomic\nequilibrium: GDP, wages, TFP"]
+    G["Extract macro aggregates\nUpdate CLEWS boundary\nconditions with OG output"]
+    H["Compute L2 Norm\nΔ = ‖ P_t − P_{t−1} ‖₂"]
+    I{"Δ < ε ?\n(ε = 1×10⁻⁴)"}
+    J{"Iteration limit\nreached?\n(max = 25)"}
+    K(["CONVERGED ✓\nRecord final parameter\nvector and metadata"])
+    L(["NON-CONVERGENCE\nLog divergence warning\nReturn best iteration"])
+    M["Stream iteration log line\nto WebSocket /ws/convergence\nReact dashboard receives"];
+    N["t = t + 1\nUpdate P_{t-1} ← P_t"]
+
+    A --> B --> C --> D --> E
+    E -- No --> FERR
+    E -- Yes --> F --> G --> H --> M --> I
+    I -- Yes --> K
+    I -- No --> J
+    J -- Yes --> L
+    J -- No --> N --> B
+```
 
 ---
 
@@ -216,6 +328,50 @@ A sophisticated, React-based frontend application engineered to serve as the cen
 
 ---
 
+### Diagram 4 — React Component Hierarchy
+
+The following diagram illustrates the complete React component tree of the Module 07 frontend dashboard, including data flow via props and custom hooks.
+
+```mermaid
+flowchart TD
+    APP["App.jsx\nRoot Orchestrator\nGlobal state + hooks"]
+
+    subgraph HOOKS ["Custom Hooks"]
+        HWS["useWebSocket\nWS connect/disconnect\nmessage stream"]
+        HCS["useConvergenceState\nParse messages →\nstructured convergence data"]
+        HPS["useParameterState\nOG-Core + CLEWS\nparameter management"]
+    end
+
+    subgraph LAYOUT ["Layout Layer"]
+        SB["Sidebar\nTab navigation\nAPI status · session timer"]
+        TB["Topbar\nPage title · run controls\nDelta display · state badge"]
+    end
+
+    subgraph TABS ["Tab Content Components"]
+        SW["ScenarioWorkspace\nMain orchestration view"]
+        MC["MacroConfigPanel\nOG-Core parameter editor"]
+        CC["CLEWSConstraintsPanel\nResource bounds editor"]
+        TS["TelemetryStream\nFull-screen log viewer"]
+        RP["ResultsPanel\nPost-convergence charts"]
+    end
+
+    subgraph WORKSPACE ["Scenario Workspace Sub-Components"]
+        MSC["ModelStatusCard × 3\nOG-Core · CLEWS · Engine"]
+        CHART["ConvergenceChart\nRecharts LineChart\nlog-scale delta plot"]
+        GAUGE["ConvergenceGauge\nSVG arc gauge\nconvergence %"]
+        TABLE["IterationTable\nper-iteration delta history"]
+        ETL["ETLFlowVisualizer\nAnimated pipeline diagram"]
+        DRIFT["ParameterDriftPanel\nLive bar charts"]
+    end
+
+    APP --> HWS & HCS & HPS
+    APP --> SB & TB
+    APP --> SW & MC & CC & TS & RP
+    SW --> MSC & CHART & GAUGE & TABLE & ETL & DRIFT & TS
+```
+
+---
+
 ## 08 — High-Performance Integration API
 
 **Directory:** `08_integration_api/`
@@ -227,6 +383,93 @@ A robust FastAPI backend designed to augment the standard Flask endpoints, speci
 - **Asynchronous Execution:** Leverages asynchronous Python (`asyncio`) and the FastAPI framework to orchestrate the convergence prototype (`run_convergence.py`) as an independent, non-blocking subprocess.
 - **WebSocket Streaming:** Implements persistent WebSocket connections (`/ws/convergence`) to stream standard output from the iterative convergence loop directly to the frontend interface in real time.
 - **Systemic Resilience:** Ensures robust exception handling and graceful disconnection protocols, guaranteeing stable systemic performance during extensive, multi-hour mathematical simulations and mitigating data loss during transient network interruptions.
+
+---
+
+### Diagram 5 — WebSocket API Communication Flow
+
+This sequence diagram details the complete lifecycle of a user-initiated convergence run, from browser click through to real-time telemetry delivery.
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI   as React Dashboard\n(07_frontend_dashboard)
+    participant API  as FastAPI Backend\n(08_integration_api)
+    participant CONV as Convergence Script\n(04_convergence_prototype)
+    participant ETL  as ETL Pipeline\n(02_etl_pipeline)
+    participant OG   as OG-Core Model
+    participant CL   as CLEWS / OSeMOSYS
+
+    User->>UI: Click "Initialize Runtime"
+    UI->>API: WS CONNECT /ws/convergence
+    API->>API: Accept WebSocket handshake
+    API->>CONV: asyncio.create_subprocess_exec(run_convergence.py)
+    loop Each iteration t = 1..N
+        CONV->>CL: Execute OSeMOSYS solver
+        CL-->>CONV: TotalCapacityAnnual, AnnualEmission, TotalDiscountedCost
+        CONV->>ETL: Transform CLEWS outputs via YAML schema
+        ETL-->>CONV: Validated og_exchange.json (delta_tau, tau_c, alpha_G)
+        CONV->>OG: ogcore.execute.runner() with updated params
+        OG-->>CONV: Macroeconomic aggregates (GDP, wages, TFP)
+        CONV->>CONV: Compute L2 norm Δ = ‖P_t − P_{t-1}‖₂
+        CONV->>API: stdout: "── Iteration N | delta=X"
+        API->>UI: websocket.send_text(log_line)
+        UI->>UI: Update charts, gauges, telemetry stream
+        alt Δ < ε
+            CONV->>API: stdout: "[CONVERGED]"
+            API->>UI: websocket.send_text("[SYSTEM] Convergence loop finished")
+            UI->>User: Show CONVERGED state + results
+        end
+    end
+    API->>UI: WS CLOSE
+```
+
+### Diagram 6 — Parameter Dependency Graph
+
+The following graph maps the directional dependency relationships between CLEWS physical outputs and OG-Core macroeconomic parameters, illustrating how physical resource constraints propagate into the macroeconomic equilibrium.
+
+```mermaid
+flowchart LR
+    subgraph CLEWS_PHYS ["CLEWS Physical Domain"]
+        CAP["Installed Renewable Capacity\nTotalCapacityAnnual.csv\nUnit: GW"]
+        EMI["Annual CO₂ Emissions\nAnnualTechnologyEmission.csv\nUnit: Mt CO₂"]
+        COST["Discounted System Cost\nTotalDiscountedCost.csv\nUnit: MUSD"]
+    end
+
+    subgraph ETL_TRANS ["ETL Transform Layer"]
+        T1["GW → TW conversion\nmin-max normalization\nRange: [0.04, 0.06]"]
+        T2["Linear scalar × 0.0005\nProxy: emission penalty"]
+        T3["Cost-to-GDP ratio proxy\nmin-max normalization\nRange: [0.03, 0.08]"]
+    end
+
+    subgraph OG_PARAMS ["OG-Core Parameters"]
+        DT["delta_tau_annual\nAnnual TFP growth proxy\nCaptures capital expansion"]
+        TC["tau_c\nEmission tax proxy\nFiscal carbon pricing"]
+        AG["alpha_G\nGovernment spending share\nPublic investment channel"]
+    end
+
+    subgraph OG_OUT ["OG-Core Macro Outputs"]
+        GDP["GDP Growth Rate"]
+        WAGE["Real Wage Index"]
+        INT["Real Interest Rate"]
+        TAX["Tax Revenue / GDP"]
+        TFP["Total Factor Productivity"]
+    end
+
+    CAP --> T1 --> DT
+    EMI --> T2 --> TC
+    COST --> T3 --> AG
+
+    DT -->|"Capital deepening\nvia TFP channel"| GDP
+    DT -->|"Productivity wages"| WAGE
+    DT -->|"Higher capital/\nlower interest"| INT
+    TC -->|"Carbon price\nfiscal wedge"| TAX
+    TC -->|"Cost of production"| GDP
+    AG -->|"Fiscal multiplier"| GDP
+    AG -->|"Crowding out"| INT
+    AG -->|"Revenue base"| TAX
+    DT & TC & AG --> TFP
+```
 
 ---
 
