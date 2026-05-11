@@ -11,11 +11,12 @@ import { ResultsPanel } from './components/results/ResultsPanel';
 import { useWebSocket } from './hooks/useWebSocket';
 import { useConvergenceState } from './hooks/useConvergenceState';
 import { useParameterState } from './hooks/useParameterState';
+import { OverviewPage } from './components/overview/OverviewPage';
 
 const WS_URL = 'ws://localhost:8000/ws/convergence';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('workspace');
+  const [activeTab, setActiveTab] = useState('overview');
   const [systemState, setSystemState] = useState('idle'); // idle | running | converged | error
 
   const { status: wsStatus, messages, connect, disconnect } = useWebSocket(WS_URL);
@@ -41,6 +42,8 @@ export default function App() {
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'overview':
+        return <OverviewPage onEnter={() => setActiveTab('workspace')} />;
       case 'workspace':
         return (
           <ScenarioWorkspace
