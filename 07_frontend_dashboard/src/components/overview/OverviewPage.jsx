@@ -49,7 +49,7 @@ export function OverviewPage({ onEnter }) {
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '4px 12px', borderRadius: 20, background: 'var(--emerald-glow)', border: '1px solid var(--emerald-dim)', marginBottom: 20 }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--emerald)', animation: 'pulse-dot 1.4s ease-in-out infinite' }} />
           <span style={{ fontSize: 10, color: 'var(--emerald)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
-            GSoC 2026 · UN DESA · Contributor 1
+            UN DESA · Policy Modeling Research · 2026
           </span>
         </div>
 
@@ -61,12 +61,13 @@ export function OverviewPage({ onEnter }) {
         </h1>
 
         <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 700 }}>
-          A soft-linking integration framework that bridges two mature open-source policy modeling systems —
+          A soft-linking integration framework bridging two mature open-source policy modeling systems:
           the <strong style={{ color: 'var(--amber)' }}>CLEWS physical resource model</strong> and the{' '}
-          <strong style={{ color: 'var(--emerald)' }}>OG-Core macroeconomic DSGE model</strong> — enabling
-          simultaneous analysis of physical resource feasibility and macroeconomic equilibrium. Deployed
-          by the <strong style={{ color: 'var(--text-primary)' }}>United Nations DESA</strong> across
-          Small Island Developing States, Least Developed Countries, and Land-Locked Developing Countries.
+          <strong style={{ color: 'var(--emerald)' }}>OG-Core macroeconomic DSGE model</strong>. The framework
+          enables simultaneous analysis of physical resource feasibility and macroeconomic general equilibrium,
+          deployed by the <strong style={{ color: 'var(--text-primary)' }}>United Nations DESA</strong> to
+          support evidence-based policy analysis across Small Island Developing States, Least Developed Countries,
+          and Land-Locked Developing Countries.
         </p>
 
         <div style={{ marginTop: 28 }}>

@@ -3,7 +3,7 @@ import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 
 const TAB_META = {
-  overview:   { title: 'Project Overview',     subtitle: 'OG-CLEWS Integration Framework — GSoC 2026 · UN DESA · Contributor 1.' },
+  overview:   { title: 'Project Overview',     subtitle: 'OG-CLEWS Integration Framework · UN DESA Policy Modeling Research.' },
   workspace:  { title: 'Scenario Workspace',   subtitle: 'Orchestrate and monitor the OG-CLEWS iterative coupling loop.' },
   macro:      { title: 'Macro Configuration',  subtitle: 'Configure OG-Core household, fiscal, and solver parameters.' },
   clews:      { title: 'System Constraints',   subtitle: 'Define CLEWS/OSeMOSYS energy, emissions, water, and land bounds.' },
