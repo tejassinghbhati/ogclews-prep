@@ -1,13 +1,14 @@
 import React from 'react';
-import { LayoutDashboard, Settings, Database, Activity, BarChart3, Cpu } from 'lucide-react';
+import { LayoutDashboard, Settings, Database, Activity, BarChart3, Cpu, Home } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 
 const NAV_ITEMS = [
-  { id: 'workspace',   label: 'Scenario Workspace',  icon: LayoutDashboard },
-  { id: 'macro',       label: 'Macro Configuration', icon: Settings },
-  { id: 'clews',       label: 'System Constraints',  icon: Database },
-  { id: 'telemetry',   label: 'Live Telemetry',       icon: Activity },
-  { id: 'results',     label: 'Results Analysis',     icon: BarChart3 },
+  { id: 'overview',   label: 'Project Overview',    icon: Home },
+  { id: 'workspace',  label: 'Scenario Workspace',  icon: LayoutDashboard },
+  { id: 'macro',      label: 'Macro Configuration', icon: Settings },
+  { id: 'clews',      label: 'System Constraints',  icon: Database },
+  { id: 'telemetry',  label: 'Live Telemetry',       icon: Activity },
+  { id: 'results',    label: 'Results Analysis',     icon: BarChart3 },
 ];
 
 export function Sidebar({ activeTab, onTabChange, systemState, iteration, maxIter }) {
