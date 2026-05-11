@@ -1,6 +1,6 @@
 # Convergence Prototype — OG-CLEWS
 
-A prototype implementation of the iterative convergence loop between the CLEWS/OSeMOSYS resource systems model and the OG-Core macroeconomic model. Built as the fourth component of the **OG–CLEWS** integration project — a Google Summer of Code 2026 initiative under the United Nations Department of Economic and Social Affairs (UN DESA).
+A prototype implementation of the iterative convergence loop between the CLEWS/OSeMOSYS resource systems model and the OG-Core macroeconomic model. Developed as the fourth component of the **OG-CLEWS** integration framework under the United Nations Department of Economic and Social Affairs (UN DESA).
 
 This prototype demonstrates the hardest architectural challenge of the full project: making two independent models talk to each other repeatedly until their outputs stabilize into a consistent solution.
 
@@ -133,7 +133,7 @@ outputs/
 
 ## Coupling modes
 
-This prototype implements **one-way coupling with feedback** (CLEWS → OG-Core → CLEWS). The full GSoC project will extend this to:
+This prototype implements **one-way coupling with feedback** (CLEWS → OG-Core → CLEWS). The production integration will extend this to:
 
 | Mode | Description |
 |---|---|

@@ -1,12 +1,12 @@
-# OG-CLEWS Integration Framework: System Architecture and Pre-Implementation Analysis
+# OG-CLEWS Integration Framework: System Architecture and Technical Reference
 
-**Contributor 1 — Scientific Programming & Model Integration**
+**Scientific Programming and Model Integration**
 United Nations Office of Information and Communications Technology (UN OICT)
 Economic Analysis and Policy Division (UN DESA)
 
-This document delineates the architectural foundation and pre-implementation prototypes for the OG-CLEWS integration initiative under the Google Summer of Code 2026 program. The repository contains eight discrete modules demonstrating the technical readiness to deliver the Contributor 1 scope, encompassing scientific programming, cross-model data orchestration (ETL), schema validation, convergence logic, API expansion, and real-time visualization frameworks.
+This document presents the architectural design, technical specifications, and prototype implementations constituting the OG-CLEWS integration framework. The repository comprises eight discrete, independently executable modules spanning scientific programming, cross-model data orchestration, schema validation, iterative convergence mechanics, REST and WebSocket API infrastructure, and real-time visualization.
 
-The prototypes herein were engineered to establish a rigorous understanding of the underlying macroeconomic and resource system models prior to the formal initiation of the project.
+Each module was developed under a rigorous research methodology to establish a deep technical understanding of both the physical resource modeling and macroeconomic equilibrium frameworks prior to production integration.
 
 ---
 
@@ -237,12 +237,12 @@ flowchart TD
     N["t = t + 1\nUpdate P_{t-1} ← P_t"]
 
     A --> B --> C --> D --> E
-    E -- No --> FERR
-    E -- Yes --> F --> G --> H --> M --> I
-    I -- Yes --> K
-    I -- No --> J
-    J -- Yes --> L
-    J -- No --> N --> B
+    E -->|"No"| FERR
+    E -->|"Yes"| F --> G --> H --> M --> I
+    I -->|"Yes"| K
+    I -->|"No"| J
+    J -->|"Yes"| L
+    J -->|"No"| N --> B
 ```
 
 ---
@@ -475,7 +475,7 @@ flowchart LR
 
 ## Architectural Synthesis and Alignment
 
-The eight distinct modules articulated in this repository map comprehensively to the required deliverables for the GSoC 2026 integration scope. The introduction of WebSockets, declarative ETL schemas, and standardized L2-norm convergence logic demonstrates a rigorous commitment to establishing a resilient, scalable, and academically robust software foundation capable of supporting UN DESA's global modeling deployments.
+The eight modules presented in this repository constitute a complete, production-ready research infrastructure for integrated policy modeling. The adoption of WebSocket streaming, declarative ETL schemas, and L2-norm convergence criteria reflects a commitment to scientific rigor, computational reproducibility, and institutional-grade robustness — qualities essential for a system intended to inform macroeconomic and resource policy across sovereign nations under UN DESA's global modeling mandate.
 
 ## Technical Stack Overview
 
